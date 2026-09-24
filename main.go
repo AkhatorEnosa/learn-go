@@ -28,25 +28,23 @@ func main()  {
 			
 
 			fmt.Println("Enter Lastname")
-			// get user input for firstName
+			// get user input for lastname
 			fmt.Scan(&lastName);
 			
 
 			fmt.Println("Enter Email Address: ")
-			// get user input for firstName
+			// get user input for email
 			fmt.Scan(&email);
 			
 
 			fmt.Println("Enter number of tickers: ")
-			// get user input for firstName
+			// get user input for tickers
 			fmt.Scan(&userTickets);
 
 			if userTickets > remainingTickets {
 				fmt.Printf("Only %v tickets remaining\n", remainingTickets)
 
-				fmt.Println("Enter number of tickers: ")
-				// get user input for firstName
-				fmt.Scan(&userTickets);
+				continue
 			}
 
 			remainingTickets = remainingTickets - userTickets;
