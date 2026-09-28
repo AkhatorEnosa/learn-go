@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"learn-go/helpers"
+	// "strconv"
 )
 
 var conferenceName string = "Go Conference"
 const conferenceTickets uint = 50
 var remainingTickets uint = conferenceTickets
-var bookings []string
+var bookings = make([]map[string]any, 0)
 
 func main()  {
 
@@ -24,7 +25,7 @@ func main()  {
 			firstName, lastName, email, userTickets := getUserInputs()
 
 			// input validation
-			isValidName, isValidEmail, isValidTicketCount := validateInputs(firstName, lastName, email, userTickets)
+			isValidName, isValidEmail, isValidTicketCount := helpers.ValidateInputs(firstName, lastName, email, userTickets)
 
 
 			if isValidName && isValidEmail && isValidTicketCount {
@@ -77,14 +78,6 @@ func greetUser(confName string, confTickets uint) {
 	fmt.Printf("Get your tickets to attend.\n\n")
 }
 
-func validateInputs(firstName string, lastName string, email string, userTickets uint) (bool, bool, bool) {
-	isValidName := len(firstName) >= 2 && len(lastName) >= 2
-	isValidEmail := strings.Contains(email, "@")
-	isValidTicketCount := userTickets > 0 
-
-	return isValidName, isValidEmail, isValidTicketCount
-}
-
 func getUserInputs() (string, string, string, uint) {
 	var firstName string
 	var lastName string
@@ -114,8 +107,22 @@ func getUserInputs() (string, string, string, uint) {
 }
 
 func bookTicket(firstName string, lastName string, email string, userTickets uint) {
-	remainingTickets = remainingTickets - userTickets;
-	bookings = append(bookings, lastName + " " + firstName)
+	remainingTickets = remainingTickets - userTickets
+
+	// create a map for user
+	var userData = make(map[string]any)
+
+	userData["firstName"] = firstName
+	userData["lastName"] = lastName
+	userData["email"] = email
+	userData["numberOfTickets"] = userTickets
+	// userData["numberOfTickets"] = strconv.FormatUint(uint64(userTickets), 10)
+	// map ends here
+
+
+	bookings = append(bookings, userData)
+
+	fmt.Printf("Users with bookings is as follows: %v ", bookings)
 
 	fmt.Printf("Thank you %v %v for booking %v tickets for %v.\n Remaining tickets is now %v.\n A confirmation email will be sent to your email %v \n\n", firstName, lastName, userTickets, conferenceName, remainingTickets, email)
 }
@@ -125,9 +132,9 @@ func getFirstnames() []string {
 	var firstNames []string
 	
 	for _, booking := range bookings {
-		var names = strings.Fields(booking) // split each names from bookings
-		firstName := names[0]
-		firstNames = append(firstNames, firstName)
+		// var names = strings.Fields(booking) // split each names from bookings
+		firstName := booking["firstName"]
+		firstNames = append(firstNames, firstName.(string))
 	}
 
 	return firstNames
