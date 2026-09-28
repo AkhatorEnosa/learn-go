@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"learn-go/helpers"
+	"sync"
 	"time"
 	// "strconv"
 )
@@ -20,6 +21,8 @@ type UserData struct{
 	numberOfTickets uint
 }
 
+var wg = sync.WaitGroup{}
+
 func main()  {
 
 	// greet users
@@ -27,9 +30,7 @@ func main()  {
 	
 	// fmt.Println("Hello and welcome to", conferenceName)
 	// fmt.Printf("The amount of tickets provided are %v and the amount of tickets available right now are %v. Be fast and grab a ticket for yourself now!!!!\n", conferenceTickets, remainingTickets)
-
-
-	for {
+	
 		if remainingTickets > 0 {
 			firstName, lastName, email, userTickets := getUserInputs()
 
@@ -40,11 +41,16 @@ func main()  {
 			if isValidName && isValidEmail && isValidTicketCount {
 				if userTickets > remainingTickets {
 					fmt.Printf("Only %v tickets remaining\n", remainingTickets)
-					continue
+					// continue
 				}
 
 				// book the ticket
 				bookTicket(firstName, lastName, email, userTickets)
+
+				// wait for the goroutine to finish
+				wg.Add(1)
+
+				// send ticket
 				go sendTicket(userTickets, firstName, lastName, email)
 
 				// get first names
@@ -69,16 +75,16 @@ func main()  {
 				if !isValidTicketCount {
 					fmt.Printf("Number of tickets is invalid.\n")
 				}
-				continue
+				// continue
 			}
 
 		} else {
 			fmt.Printf("All tickets for %v has been sold. Let's do this again next year. Cheers\n", conferenceName)
-			break
+			// break
 		}
-	}
 	
-
+	// wait for all goroutines to finish
+	wg.Wait()
 }
 
 func greetUser(confName string, confTickets uint) {
@@ -166,4 +172,7 @@ func sendTicket(userTickets uint, firstName string, lastName string, email strin
 	fmt.Println("############")
 	fmt.Printf("Sending Tickets: \n %v \n to email address %v \n", ticket, email)
 	fmt.Println("############")
+
+	// decrement the wait group counter
+	wg.Done()
 }
